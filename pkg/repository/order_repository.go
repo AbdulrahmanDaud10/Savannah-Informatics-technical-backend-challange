@@ -23,13 +23,11 @@ func NewOrderRepository() OrderRepository {
 	}
 }
 
-func (db *orderRepository) OrderProduct(userID int, productID int, quantity int) error {
+func (db *orderRepository) OrderProduct(customerID int, productID int, quantity int) error {
 	return db.connection.Create(&api.Order{
 		Model:      gorm.Model{},
 		CustomerID: 0,
 		ProductID:  uint(productID),
-		Customer:   api.Customer{},
-		Product:    api.Product{},
 		Quantity:   quantity,
 		Amount:     0,
 		Time:       time.Time{},

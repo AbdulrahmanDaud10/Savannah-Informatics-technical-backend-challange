@@ -9,11 +9,11 @@ import (
 )
 
 // GenerateToken -> generates token
-func GenerateToken(userid uint) string {
+func GenerateToken(customerid uint) string {
 	claims := jwt.MapClaims{
 		"exp":    time.Now().Add(time.Hour * 3).Unix(),
 		"iat":    time.Now().Unix(),
-		"userID": userid,
+		"customerID": customerid,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
