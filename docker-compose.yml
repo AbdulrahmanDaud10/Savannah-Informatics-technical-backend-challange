@@ -1,12 +1,12 @@
 version: "3.8"
 
 services:
-  customer_order:
+  customer_order_service:
     image: postgres
-    container_name: db_customer_order_service 
+    container_name: db_customer_order_service_challange
     restart: always
     networks:
-      customer_order:
+      customer_order_service:
         aliases:
           - database
     environment:
@@ -21,18 +21,18 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin_customer_order
+    container_name: pgadmin_customer_order_service
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     depends_on:
-      - customer_order
+      - customer_order_service
     ports:
       - "5050:80"
     env_file:
       - .env
     networks:
-      - customer_order
+      - customer_order_service
     restart: unless-stopped
 
 volumes:
@@ -41,5 +41,5 @@ volumes:
     driver: local
 
 networks:
-  customer_order:
+  customer_order_service:
     driver: bridge
