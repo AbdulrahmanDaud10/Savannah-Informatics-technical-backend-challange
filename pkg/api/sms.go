@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -70,7 +70,7 @@ func (at *AtClient) SendBulkSMS(ctx context.Context, input BulkSMSInput) (BulkSM
 		return bulkSMSResponse, err
 	}
 
-	respData, err := ioutil.ReadAll(resp.Body)
+	respData, err := io.ReadAll(resp.Body)
 	_ = resp.Body.Close()
 	if err != nil {
 		return bulkSMSResponse, err
