@@ -9,7 +9,7 @@ import (
 
 func TestGenerateToken(t *testing.T) {
 	type args struct {
-		userid uint
+		customerid uint
 	}
 	tests := []struct {
 		name string
@@ -20,7 +20,7 @@ func TestGenerateToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GenerateToken(tt.args.userid); got != tt.want {
+			if got := GenerateToken(tt.args.customerid); got != tt.want {
 				t.Errorf("GenerateToken() = %v, want %v", got, tt.want)
 			}
 		})
@@ -37,7 +37,7 @@ func TestValidateToken(t *testing.T) {
 		want    *jwt.Token
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		// TODO: Add test cases
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

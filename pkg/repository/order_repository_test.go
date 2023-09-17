@@ -11,7 +11,7 @@ func Test_orderRepository_OrderProduct(t *testing.T) {
 		connection *gorm.DB
 	}
 	type args struct {
-		userID    int
+		customerID    int
 		productID int
 		quantity  int
 	}
@@ -28,7 +28,7 @@ func Test_orderRepository_OrderProduct(t *testing.T) {
 			db := &orderRepository{
 				connection: tt.fields.connection,
 			}
-			if err := db.OrderProduct(tt.args.userID, tt.args.productID, tt.args.quantity); (err != nil) != tt.wantErr {
+			if err := db.OrderProduct(tt.args.customerID, tt.args.productID, tt.args.quantity); (err != nil) != tt.wantErr {
 				t.Errorf("orderRepository.OrderProduct() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

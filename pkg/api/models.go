@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Customer -> model for users table
+// Customer -> model for customers table
 type Customer struct {
 	gorm.Model
 	Name     string `gorm:"name" json:"name"`
@@ -38,11 +38,11 @@ type Order struct {
 	gorm.Model
 	CustomerID uint
 	ProductID  uint
-	Customer   Customer  `gorm:"foreignkey:UserID"`
-	Product    Product   `gorm:"foreignkey:ProductID"`
-	Quantity   int       `gorm:"quantity" json:"quantity"`
-	Amount     int       `gorm:"amount" jsoon:"amount"`
-	Time       time.Time `gorm:"time" json:"time"`
+	// Customer   Customer  `gorm:"foreignkey:customerID"`
+	// Product    Product   `gorm:"foreignkey:ProductID"`
+	Quantity int       `gorm:"quantity" json:"quantity"`
+	Amount   int       `gorm:"amount" jsoon:"amount"`
+	Time     time.Time `gorm:"time" json:"time"`
 }
 
 // TableName --> Table for Order Model
