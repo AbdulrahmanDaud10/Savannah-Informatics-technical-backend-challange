@@ -12,13 +12,14 @@ import (
 // AuthorizeJWT -> to authorize JWT Token
 func AuthorizeJWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		const BearerSchema string = "Bearer "
+		const BearerSchema string = "Bearer"
 		authHeader := ctx.GetHeader("Authorization")
-		if authHeader == "" {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "No Authorization header found"})
+		fmt.Println("-------------------------", authHeader)
+		// if authHeader == "" {
+		// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		// 		"error": "No Authorization header found"})
 
-		}
+		// }
 		tokenString := authHeader[len(BearerSchema):]
 
 		if token, err := api.ValidateToken(tokenString); err != nil {

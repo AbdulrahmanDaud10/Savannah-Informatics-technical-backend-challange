@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// CustoomerHandler -> interface to Customer entity
+// CustomerHandler -> interface to Customer entity
 type CustomerHandler interface {
 	AddCustomer(*gin.Context)
 	GetCustomer(*gin.Context)

@@ -35,8 +35,8 @@ type (
 	// BulkSMSResponse is returned by SendBulkSMS as a response.
 	BulkSMSResponse struct {
 		SMSMessageData struct {
-			Message    string             `json:"Message"`
-			Recipients []BulkSMSRecipient `json:"Recipients"`
+			Message    string             `json:"message"`
+			Recipients []BulkSMSRecipient `json:"recipients"`
 		} `json:"SMSMessageData"`
 	}
 )
