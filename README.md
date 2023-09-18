@@ -97,7 +97,7 @@ The .env file should look like this:
 # Database Configurations
 DB_HOST = "127.0.0.1"
 DB_PORT = "5432"
-DB_USER = "postgres"
+DB_USER = "abdulrahman"
 DB_NAME = "customer_order_service"
 DB_PASSWORD = ""
 

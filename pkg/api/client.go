@@ -19,7 +19,7 @@ type (
 	}
 )
 
-// New returns an instance of an Africa's Talking client reusbale across different products.
+// GetAfricasTalkingSettings returns an instance of an Africa's Talking client reusbale across different products.
 func GetAfricasTalkingSettings(apiKey string, username string, sandbox bool) *AtClient {
 	AtClient := &AtClient{
 		apiKey: apiKey,

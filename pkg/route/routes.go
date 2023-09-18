@@ -53,7 +53,8 @@ func SetupRoutes(address string) error {
 
 	messageRoutes := apiRoutes.Group("/messages", app.AuthorizeJWT())
 	{
-		messageRoutes.POST("/")
+		messageRoutes.POST("/send-bulk-sms", app.SendBulkSMSHandler)
+		messageRoutes.GET("/get-africas-talking-settings", app.GetAfricasTalkingSettingsHandler)
 	}
 
 	return r.Run(address)
