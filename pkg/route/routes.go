@@ -51,6 +51,11 @@ func SetupRoutes(address string) error {
 		orderRoutes.POST("/product/:product/quantity/:quantity", orderHandler.OrderProduct)
 	}
 
+	messageRoutes := apiRoutes.Group("/messages", app.AuthorizeJWT())
+	{
+		messageRoutes.POST("/")
+	}
+
 	return r.Run(address)
 
 }
