@@ -59,7 +59,7 @@ func SendBulkSMSViaAfricasTalking(message string, phoneNumbers []string) error {
 		})
 	}
 
-	requestBody := BulkSMSRecipient{}
+	requestBody := BulkSMSResponse{}
 
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
