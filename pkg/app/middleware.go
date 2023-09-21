@@ -15,11 +15,11 @@ func AuthorizeJWT() gin.HandlerFunc {
 		const BearerSchema string = "Bearer"
 		authHeader := ctx.GetHeader("Authorization")
 		fmt.Println("-------------------------", authHeader)
-		// if authHeader == "" {
-		// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-		// 		"error": "No Authorization header found"})
+		if authHeader == "" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "No Authorization header found"})
 
-		// }
+		}
 		tokenString := authHeader[len(BearerSchema):]
 
 		if token, err := api.ValidateToken(tokenString); err != nil {

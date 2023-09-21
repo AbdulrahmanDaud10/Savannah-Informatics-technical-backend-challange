@@ -50,7 +50,7 @@ type (
 
 // SendBulkSMSViaAfricasTalking makes a POST request to send bulk SMS's the Africa's Talking and returns a response.
 // It uses opinionated defaults.
-func SendBulkSMSViaAfricasTalking(message string, phoneNumbers []string) error {
+func SendBulkSMSViaAfricasTalking(africasTalkingSettings AfricasTalkingSettings, message string, phoneNumbers []string) error {
 	bulkMessage := []map[string]string{}
 	for _, phoneNumber := range phoneNumbers {
 		bulkMessage = append(bulkMessage, map[string]string{
@@ -59,7 +59,13 @@ func SendBulkSMSViaAfricasTalking(message string, phoneNumbers []string) error {
 		})
 	}
 
-	requestBody := BulkSMSResponse{}
+	fmt.Println(bulkMessage)
+	requestBody := map[string]interface{}{
+		"api_key":  africasTalkingSettings.ApiKey,
+		"username": africasTalkingSettings.Username,
+		"endpoint": africasTalkingSettings.Endpoint,
+		"message":  bulkMessage,
+	}
 
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {

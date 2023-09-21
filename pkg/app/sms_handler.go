@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/AbdulrahmanDaud10/savannah-info-customer-order-service/pkg/api"
@@ -22,16 +21,16 @@ func GetAfricasTalkingSettingsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, atClient)
 }
+// TODO:
+// func SendBulkSMSViaAfricasTalkingHandler(ctx *gin.Context) {
 
-func SendBulkSMSViaAfricasTalkingHandler(ctx *gin.Context) {
-	type ExpectedInput struct {
-		Message      string   `json:"message"`
-		PhoneNumbers []string `json:"phone_numbers"`
-	}
+// 	expectedInput := struct {
+// 		Message      string   `json:"message"`
+// 		PhoneNumbers []string `json:"phone_numbers"`
+// 	}{}
 
-	var expectedInput ExpectedInput
-	ctx.Bind(&expectedInput)
+// 	ctx.Bind(&expectedInput)
 
-	checkErr := api.SendBulkSMSViaAfricasTalking(expectedInput.Message, expectedInput.PhoneNumbers)
-	fmt.Printf("could not send the notifications message to customer:%v", checkErr)
-}
+// 	checkErr := api.SendBulkSMSViaAfricasTalking(expectedInput.Message, expectedInput.PhoneNumbers, api.AfricasTalkingSettings)
+// 	fmt.Printf("could not send the notifications message to customer:%v", checkErr)
+// }
