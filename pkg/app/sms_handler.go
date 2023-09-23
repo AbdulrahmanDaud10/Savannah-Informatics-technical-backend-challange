@@ -1,6 +1,7 @@
 package app
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/AbdulrahmanDaud10/savannah-info-customer-order-service/pkg/api"
@@ -21,16 +22,25 @@ func GetAfricasTalkingSettingsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, atClient)
 }
-// TODO:
-// func SendBulkSMSViaAfricasTalkingHandler(ctx *gin.Context) {
 
-// 	expectedInput := struct {
-// 		Message      string   `json:"message"`
-// 		PhoneNumbers []string `json:"phone_numbers"`
-// 	}{}
+// SendAfricasTalkingBulkSMSHandler takes expected input from the request and sends the message
+func SendAfricasTalkingBulkSMSHandler(c *gin.Context) {
+	expectedInput := struct {
+		Message    string   `json:"message"`
+		Recipients []string `json:"recipients"`
+	}{}
+	c.Bind(&expectedInput)
 
-// 	ctx.Bind(&expectedInput)
+	var sandbox api.AfricasTalkingSettings
+	africasTalkingSettings, err := api.GetAfricasTalkingSettings(apiKey, username, sandbox)
+	if err != nil {
+		log.Fatal("error getting africa's Talking settings")
+	}
 
-// 	checkErr := api.SendBulkSMSViaAfricasTalking(expectedInput.Message, expectedInput.PhoneNumbers, api.AfricasTalkingSettings)
-// 	fmt.Printf("could not send the notifications message to customer:%v", checkErr)
-// }
+	Err := api.SendAfricastalkingBulkSMS(africasTalkingSettings, expectedInput.Message, expectedInput.Recipients)
+	if Err != nil {
+		log.Fatal("error sending sms via africa's talking")
+
+	}
+	// TODO: save message in the DB
+}

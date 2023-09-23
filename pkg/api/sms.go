@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,10 +11,10 @@ import (
 )
 
 var (
-	APIKey              = os.Getenv("AFRICASTALKING_API_KEY_SETTINGS_LABEL")
-	UserName            = os.Getenv("AFRICASTALKING_USERNAME_SETTINGS_LABEL")
-	BaseLiveEndpoint    = os.Getenv("AFRICASTALKING_BASELIVE_ENDPOINT")
-	BaseSandboxEndpoint = os.Getenv("AFRICASTALKING_SANDBOX_ENDPOINT")
+	AfricasTalkingApiKey   = os.Getenv("AFRICASTALKING_API_KEY_SETTINGS_LABEL")
+	AfricasTalkingUserName = os.Getenv("AFRICASTALKING_USERNAME_SETTINGS_LABEL")
+	BaseLiveEndpoint       = os.Getenv("AFRICASTALKING_BASELIVE_ENDPOINT")
+	BaseSandboxEndpoint    = os.Getenv("AFRICASTALKING_SANDBOX_ENDPOINT")
 )
 
 type (
@@ -48,41 +49,52 @@ type (
 	}
 )
 
-// SendBulkSMSViaAfricasTalking makes a POST request to send bulk SMS's the Africa's Talking and returns a response.
-// It uses opinionated defaults.
-func SendBulkSMSViaAfricasTalking(africasTalkingSettings AfricasTalkingSettings, message string, phoneNumbers []string) error {
-	bulkMessage := []map[string]string{}
-	for _, phoneNumber := range phoneNumbers {
-		bulkMessage = append(bulkMessage, map[string]string{
-			"to":       phoneNumber,
-			"meassage": message,
+// SendAfricastalkingBulkSMS uses Tuma settings to send a message to multiple phone numbers
+func SendAfricastalkingBulkSMS(africasTalkingSettings AfricasTalkingSettings, message string, recipients []string) error {
+
+	bulkMessages := []map[string]string{}
+	for _, recipient := range recipients {
+		bulkMessages = append(bulkMessages, map[string]string{
+			"recipient": recipient,
+			"message":   message,
 		})
 	}
 
-	fmt.Println(bulkMessage)
-	requestBody := map[string]interface{}{
-		"api_key":  africasTalkingSettings.ApiKey,
-		"username": africasTalkingSettings.Username,
-		"endpoint": africasTalkingSettings.Endpoint,
-		"message":  bulkMessage,
+	africastalkingRequestBody := map[string]interface{}{
+		"api_key": AfricasTalkingSettings.ApiKey,
+		"batch":   bulkMessages,
 	}
 
-	jsonBody, err := json.Marshal(requestBody)
-	if err != nil {
-		log.Fatal(err)
-		return err
+	jsonBody, marshallError := json.Marshal(africastalkingRequestBody)
+
+	if marshallError != nil {
+		log.Fatal(marshallError)
+		return marshallError
+	}
+	request, httpError := http.NewRequest(http.MethodPost, BaseSandboxEndpoint, bytes.NewBuffer(jsonBody))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("api-key", africasTalkingSettings.ApiKey)
+
+	if httpError != nil {
+		log.Fatal(httpError)
+		return httpError
 	}
 
-	responce, err := http.Post(BaseSandboxEndpoint, "application/json", bytes.NewBuffer(jsonBody))
+	client := http.Client{}
+
+	response, err := client.Do(request)
 	if err != nil {
-		return err
+		panic(err)
 	}
-	defer responce.Body.Close()
+	defer response.Body.Close()
 
 	var res map[string]interface{}
 
-	json.NewDecoder(responce.Body).Decode(&res)
-	fmt.Println(res)
+	json.NewDecoder(response.Body).Decode(&res)
+
+	if response.StatusCode != http.StatusOK {
+		return errors.New(fmt.Sprint(res))
+	}
 	return nil
 }
 

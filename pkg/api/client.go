@@ -38,7 +38,7 @@ func GetAfricasTalkingSettings(apiKey string, username string, sandbox bool) *At
 	} else {
 		AtClient.Endpoint = BASELIVEENDPOINT
 	}
-	
+
 	fmt.Println("##############################", AtClient)
 	return AtClient
 }
