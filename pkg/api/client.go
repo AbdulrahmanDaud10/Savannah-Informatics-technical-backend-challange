@@ -1,40 +1,45 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
-const (
-	baseLiveEndpoint    = "https://api.africastalking.com/version1/"
-	baseSandboxEndpoint = "https://api.sandbox.africastalking.com/version1/"
+var (
+	APIKEY              = os.Getenv("AFRICASTALKING_API_KEY_SETTINGS_LABEL")
+	USERNAME            = os.Getenv("AFRICASTALKING_USERNAME_SETTINGS_LABEL")
+	BASELIVEENDPOINT    = os.Getenv("AFRICASTALKING_BASELIVE_ENDPOINT")
+	BASESANDBOXENDPOINT = os.Getenv("AFRICASTALKING_SANDBOX_ENDPOINT")
 )
 
 type (
 	AtClient struct {
-		apiKey     string
-		endpoint   string
+		ApiKey     string `json:"api_key"`
+		Endpoint   string `json:"endpoint"`
 		httpClient *http.Client
-		username   string
+		Username   string `json:"username"`
 	}
 )
 
 // GetAfricasTalkingSettings returns an instance of an Africa's Talking client reusbale across different products.
 func GetAfricasTalkingSettings(apiKey string, username string, sandbox bool) *AtClient {
 	AtClient := &AtClient{
-		apiKey: apiKey,
+		ApiKey: apiKey,
 		httpClient: &http.Client{
 			Timeout: time.Second * 10,
 		},
-		username: username,
+		Username: username,
 	}
 
 	if sandbox {
-		AtClient.endpoint = baseSandboxEndpoint
+		AtClient.Endpoint = BASESANDBOXENDPOINT
 	} else {
-		AtClient.endpoint = baseLiveEndpoint
+		AtClient.Endpoint = BASELIVEENDPOINT
 	}
 
+	fmt.Println("##############################", AtClient)
 	return AtClient
 }
 
@@ -47,7 +52,7 @@ func (at *AtClient) SetHTTPClient(httpClient *http.Client) *AtClient {
 
 // setDefaultHeaders sets the standard headers required by the Africa's Talking API.
 func (at *AtClient) SetDefaultHeaders(req *http.Request) *http.Request {
-	req.Header.Set("apiKey", at.apiKey)
+	req.Header.Set("apiKey", at.ApiKey)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 

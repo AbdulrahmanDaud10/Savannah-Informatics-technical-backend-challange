@@ -2,25 +2,27 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
+	"log"
 	"net/http"
-	"net/url"
-	"strings"
+	"os"
 )
 
-const (
-	smsPath = "messaging"
+var (
+	AfricasTalkingApiKey   = os.Getenv("AFRICASTALKING_API_KEY_SETTINGS_LABEL")
+	AfricasTalkingUserName = os.Getenv("AFRICASTALKING_USERNAME_SETTINGS_LABEL")
+	BaseLiveEndpoint       = os.Getenv("AFRICASTALKING_BASELIVE_ENDPOINT")
+	BaseSandboxEndpoint    = os.Getenv("AFRICASTALKING_SANDBOX_ENDPOINT")
 )
 
 type (
 	// BulkSMSInput is passed to SendBulkSMS as a parameter.
 	BulkSMSInput struct {
-		To      []string
-		Message string
-		From    string
+		To      []string `json:"to"`
+		Message string   `json:"message"`
+		From    string   `json:"from"`
 	}
 
 	// BulkSMSRecipient is returned as part of the BulkSMSResponse.
@@ -39,50 +41,63 @@ type (
 			Recipients []BulkSMSRecipient `json:"recipients"`
 		} `json:"SMSMessageData"`
 	}
+
+	AfricasTalkingSettings struct {
+		ApiKey   string `json:"api_key"`
+		Username string `json:"username"`
+		Endpoint string `json:"endpoint"`
+	}
 )
 
-// SendBulkSMS makes a POST request to send bulk SMS's the Africa's Talking and returns a response.
-// It uses opinionated defaults.
-func (at *AtClient) SendBulkSMS(ctx context.Context, input BulkSMSInput) (BulkSMSResponse, error) {
-	bulkSMSResponse := BulkSMSResponse{}
+// SendAfricastalkingBulkSMS uses Tuma settings to send a message to multiple phone numbers
+func SendAfricastalkingBulkSMS(africasTalkingSettings AfricasTalkingSettings, message string, recipients []string) error {
 
-	form := url.Values{
-		"username":             {at.username},
-		"to":                   {strings.Join(input.To, ",")},
-		"message":              {input.Message},
-		"bulkSMSMode":          {"1"},
-		"enqueue":              {"1"},
-		"retryDurationInHours": {"1"},
+	bulkMessages := []map[string]string{}
+	for _, recipient := range recipients {
+		bulkMessages = append(bulkMessages, map[string]string{
+			"recipient": recipient,
+			"message":   message,
+		})
 	}
 
-	if input.From != "" {
-		form.Set("from", input.From)
+	africastalkingRequestBody := map[string]interface{}{
+		"api_key": AfricasTalkingSettings.ApiKey,
+		"batch":   bulkMessages,
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, at.endpoint+smsPath, bytes.NewBufferString(form.Encode()))
+	jsonBody, marshallError := json.Marshal(africastalkingRequestBody)
+
+	if marshallError != nil {
+		log.Fatal(marshallError)
+		return marshallError
+	}
+	request, httpError := http.NewRequest(http.MethodPost, BaseSandboxEndpoint, bytes.NewBuffer(jsonBody))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("api-key", africasTalkingSettings.ApiKey)
+
+	if httpError != nil {
+		log.Fatal(httpError)
+		return httpError
+	}
+
+	client := http.Client{}
+
+	response, err := client.Do(request)
 	if err != nil {
-		return bulkSMSResponse, err
+		panic(err)
 	}
-	req = at.SetDefaultHeaders(req)
+	defer response.Body.Close()
 
-	resp, err := at.httpClient.Do(req)
-	if err != nil {
-		return bulkSMSResponse, err
+	var res map[string]interface{}
+
+	json.NewDecoder(response.Body).Decode(&res)
+
+	if response.StatusCode != http.StatusOK {
+		return errors.New(fmt.Sprint(res))
 	}
+	return nil
+}
 
-	respData, err := io.ReadAll(resp.Body)
-	_ = resp.Body.Close()
-	if err != nil {
-		return bulkSMSResponse, err
-	}
+func SendNotificationSMSAfterOrder() {
 
-	if resp.StatusCode >= http.StatusBadRequest {
-		return bulkSMSResponse, fmt.Errorf("status code: %s: %q", resp.Status, respData)
-	}
-
-	if err := json.Unmarshal(respData, &bulkSMSResponse); err != nil {
-		return bulkSMSResponse, err
-	}
-
-	return bulkSMSResponse, nil
 }

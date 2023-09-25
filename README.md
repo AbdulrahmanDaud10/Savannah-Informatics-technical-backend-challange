@@ -141,3 +141,17 @@ Some of the articles I read to help me solve the technical challang:
   - [Docker](https://www.bacancytechnology.com/blog/dockerize-golang-application)
   - [Github Actions](https://medium.com/swlh/setting-up-github-actions-for-go-project-ea84f4ed3a40)
   - [Gorm](https://gorm.io/docs/models.html)
+
+## Limitations
+Some of the few things that need improvement:
+* `JWT` feature should be enhanced:
+  ````
+  ````
+* Africa's Talking SMS:
+  ````
+  Post "": unsupported protocol scheme ""[GIN] 2023/09/19 - 17:21:05 | 200 |     988.168µs |       127.0.0.1 | POST     "/api/messages/send-bulk-sms"
+  ````
+* GCP Golang Engine Configuration:
+  ```
+  ERROR: (gcloud.app.deploy) User [dulisyke3015@gmail.com] does not have permission to access apps instance [silver-treat-399511] (or it may not exist): Read access to project 'silver-treat-399511' was denied: please check billing account associated and retry
+  ```

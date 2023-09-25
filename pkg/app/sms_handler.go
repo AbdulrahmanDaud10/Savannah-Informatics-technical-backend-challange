@@ -1,7 +1,7 @@
 package app
 
 import (
-	"context"
+	"log"
 	"net/http"
 
 	"github.com/AbdulrahmanDaud10/savannah-info-customer-order-service/pkg/api"
@@ -23,21 +23,24 @@ func GetAfricasTalkingSettingsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, atClient)
 }
 
-func SendBulkSMSHandler(c *gin.Context) {
-	var input api.BulkSMSInput
+// SendAfricasTalkingBulkSMSHandler takes expected input from the request and sends the message
+func SendAfricasTalkingBulkSMSHandler(c *gin.Context) {
+	expectedInput := struct {
+		Message    string   `json:"message"`
+		Recipients []string `json:"recipients"`
+	}{}
+	c.Bind(&expectedInput)
 
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	atClient := api.GetAfricasTalkingSettings(c.Query("apiKey"), c.Query("username"), false)
-
-	bulkSMSResponse, err := atClient.SendBulkSMS(context.Background(), input)
+	var sandbox api.AfricasTalkingSettings
+	africasTalkingSettings, err := api.GetAfricasTalkingSettings(apiKey, username, sandbox)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		log.Fatal("error getting africa's Talking settings")
 	}
 
-	c.JSON(http.StatusOK, bulkSMSResponse)
+	Err := api.SendAfricastalkingBulkSMS(africasTalkingSettings, expectedInput.Message, expectedInput.Recipients)
+	if Err != nil {
+		log.Fatal("error sending sms via africa's talking")
+
+	}
+	// TODO: save message in the DB
 }
